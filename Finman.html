@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloud Budget Tracker (Google Sheets)</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --income: #16a34a;
+      --expense: #dc2626;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+
+    h2 { margin-top: 0; margin-bottom: 12px; font-size: 1.1rem; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label { font-size: 0.8rem; color: #6b7280; margin-bottom: 4px; }
+    .stat-value { font-size: 1.25rem; font-weight: 700; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .btn-group { display: flex; gap: 8px; }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-add { background: var(--income); color: white; }
+    .btn-sub { background: var(--expense); color: white; }
+    .btn-sim { background: var(--primary); color: white; }
+
+    .sim-result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .sim-result.warning {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .amount-income { color: var(--income); font-weight: 600; }
+    .amount-expense { color: var(--expense); font-weight: 600; }
+
+    .sync-status {
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <div class="sync-status" id="syncStatus">Syncing with Google Sheets...</div>
+
+  <!-- Dashboard Overview -->
+  <div class="card">
+    <h2>Budget Overview</h2>
+    <div class="dashboard-grid">
+      <div class="stat-box">
+        <div class="stat-label">Total Balance</div>
+        <div class="stat-value" id="totalBalance">₹0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Days Left in Month</div>
+        <div class="stat-value" id="daysLeft">0</div>
+      </div>
+      <div class="stat-box" style="grid-column: span 2;">
+        <div class="stat-label">Daily Spend Allowance</div>
+        <div class="stat-value" id="dailySpend" style="color: var(--primary);">₹0 / day</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Subtract Transactions -->
+  <div class="card">
+    <h2>Log Transaction</h2>
+    <div class="form-group">
+      <input type="text" id="txNote" placeholder="Description (e.g. Groceries, Rent)" />
+      <input type="number" id="txAmount" placeholder="Amount (₹)" min="0" />
+    </div>
+    <div class="btn-group">
+      <button class="btn-add" onclick="addTransaction('income')">+ Add Income</button>
+      <button class="btn-sub" onclick="addTransaction('expense')">- Add Expense</button>
+    </div>
+  </div>
+
+  <!-- Affordability Simulator -->
+  <div class="card">
+    <h2>Can I Afford This?</h2>
+    <div class="form-group">
+      <input type="number" id="simAmount" placeholder="Planned purchase amount (₹)" min="0" />
+    </div>
+    <button class="btn-sim" style="width: 100%;" onclick="checkAffordability()">Calculate Impact</button>
+    <div id="simResult" class="sim-result" style="display: none;"></div>
+  </div>
+
+  <!-- History -->
+  <div class="card">
+    <h2>Transaction History</h2>
+    <ul class="history-list" id="historyList"></ul>
+  </div>
+
+</div>
+
+<script>
+  // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUZi0qSHccQZrEtZ0vThpzm6k5GLEP2laco8SGwcxtKSXw8HJDX1cOQDHQGF0brzg4/exec";
+
+  let transactions = [];
+
+  function getDaysRemaining() {
+    const today = new Date();
+    const totalDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    return totalDays - today.getDate() + 1;
+  }
+
+  async function fetchCloudData() {
+    const statusEl = document.getElementById('syncStatus');
+    statusEl.innerText = 'Syncing with Google Sheets...';
+    try {
+      const res = await fetch(SCRIPT_URL);
+      transactions = await res.json();
+      statusEl.innerText = 'Connected to Google Sheets';
+      updateUI();
+    } catch (err) {
+      statusEl.innerText = 'Failed to load Google Sheets data.';
+      console.error(err);
+    }
+  }
+
+  async function addTransaction(type) {
+    const noteInput = document.getElementById('txNote');
+    const amountInput = document.getElementById('txAmount');
+
+    const note = noteInput.value.trim() || (type === 'income' ? 'Income' : 'Expense');
+    const amount = parseFloat(amountInput.value);
+
+    if (isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+
+    const payload = {
+      id: Date.now(),
+      note: note,
+      amount: amount,
+      type: type,
+      date: new Date().toLocaleDateString()
+    };
+
+    const statusEl = document.getElementById('syncStatus');
+    statusEl.innerText = 'Saving transaction...';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Solves Google Apps Script CORS restrictions
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // Optimistic UI update
+      transactions.unshift(payload);
+      updateUI();
+      statusEl.innerText = 'Transaction saved!';
+      
+      noteInput.value = '';
+      amountInput.value = '';
+    } catch (err) {
+      alert('Failed to save transaction.');
+      statusEl.innerText = 'Error saving data.';
+    }
+  }
+
+  function updateUI() {
+    const balance = transactions.reduce((acc, item) => {
+      return item.type === 'income' ? acc + item.amount : acc - item.amount;
+    }, 0);
+
+    const daysLeft = getDaysRemaining();
+    const dailySpend = daysLeft > 0 ? (balance / daysLeft) : balance;
+
+    document.getElementById('totalBalance').innerText = `₹${balance.toLocaleString()}`;
+    document.getElementById('daysLeft').innerText = `${daysLeft} days`;
+    document.getElementById('dailySpend').innerText = `₹${Math.max(0, dailySpend).toFixed(2)} / day`;
+
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '';
+
+    if (transactions.length === 0) {
+      listEl.innerHTML = '<li style="text-align:center; color:#9ca3af; padding:10px;">No transactions logged yet.</li>';
+      return;
+    }
+
+    transactions.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+      const sign = item.type === 'income' ? '+' : '-';
+      const cssClass = item.type === 'income' ? 'amount-income' : 'amount-expense';
+
+      li.innerHTML = `
+        <div>
+          <div style="font-weight: 500;">${item.note}</div>
+          <div style="font-size: 0.75rem; color: #9ca3af;">${item.date}</div>
+        </div>
+        <div class="${cssClass}">${sign}₹${item.amount.toLocaleString()}</div>
+      `;
+      listEl.appendChild(li);
+    });
+  }
+
+  function checkAffordability() {
+    const simInput = document.getElementById('simAmount');
+    const cost = parseFloat(simInput.value);
+    const resultEl = document.getElementById('simResult');
+
+    if (isNaN(cost) || cost <= 0) {
+      alert('Please enter a valid purchase amount');
+      return;
+    }
+
+    const currentBalance = transactions.reduce((acc, item) => {
+      return item.type === 'income' ? acc + item.amount : acc - item.amount;
+    }, 0);
+
+    const daysLeft = getDaysRemaining();
+    const remainingBalance = currentBalance - cost;
+
+    resultEl.style.display = 'block';
+
+    if (remainingBalance < 0) {
+      resultEl.className = 'sim-result warning';
+      resultEl.innerHTML = `<strong>Over Budget!</strong> Buying this will put you in a deficit of <strong>₹${Math.abs(remainingBalance).toLocaleString()}</strong>.`;
+    } else {
+      const newDailySpend = (remainingBalance / daysLeft).toFixed(2);
+      resultEl.className = 'sim-result';
+      resultEl.innerHTML = `You can afford this! After spending ₹${cost.toLocaleString()}, your daily budget for the next ${daysLeft} days will be <strong>₹${newDailySpend} / day</strong>.`;
+    }
+  }
+
+  fetchCloudData();
+</script>
+
+</body>
+</html>
