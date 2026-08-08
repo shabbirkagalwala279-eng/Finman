@@ -1,5 +1,5 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -19,22 +19,122 @@
   --border: #e5e7eb;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-color);
   color: var(--text);
   margin: 0;
   padding: 20px;
+  min-height: 100vh;
+}
+
+/* =========================
+   TOP BAR
+   ========================= */
+
+.top-bar {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 16px auto;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-button {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
+
+.menu-button:hover {
+  background: #f8fafc;
+}
+
+.menu-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* =========================
+   MENU
+   ========================= */
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 500px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.menu.open {
+  display: block;
+}
+
+.menu-item {
+  width: 100%;
+  padding: 15px 16px;
+  background: white;
+  color: var(--text);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: #f8fafc;
+}
+
+.menu-item.active {
+  background: #eff6ff;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* =========================
+   APP
+   ========================= */
 
 .app-container {
   width: 100%;
   max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  margin: 0 auto;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
 }
 
 .card {
@@ -43,6 +143,7 @@ body {
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid var(--border);
+  margin-bottom: 16px;
 }
 
 h2 {
@@ -50,6 +151,10 @@ h2 {
   margin-bottom: 12px;
   font-size: 1.1rem;
 }
+
+/* =========================
+   DASHBOARD
+   ========================= */
 
 .dashboard-grid {
   display: grid;
@@ -76,6 +181,10 @@ h2 {
   font-weight: 700;
 }
 
+/* =========================
+   FORM
+   ========================= */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -86,12 +195,23 @@ h2 {
 input[type="text"],
 input[type="number"],
 input[type="date"] {
+  width: 100%;
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 1rem;
-  box-sizing: border-box;
-  width: 100%;
+  background: white;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.period-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .btn-group {
@@ -124,6 +244,17 @@ button {
   color: white;
 }
 
+.small-btn {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--primary);
+  color: white;
+}
+
+/* =========================
+   SIMULATOR
+   ========================= */
+
 .sim-result {
   margin-top: 10px;
   padding: 10px;
@@ -140,11 +271,15 @@ button {
   color: #991b1b;
 }
 
+/* =========================
+   HISTORY
+   ========================= */
+
 .history-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 300px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
@@ -152,9 +287,13 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  gap: 8px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
-  gap: 10px;
+}
+
+.history-item:last-child {
+  border-bottom: none;
 }
 
 .amount-income {
@@ -167,239 +306,406 @@ button {
   font-weight: 600;
 }
 
-.sync-status {
-  font-size: 0.8rem;
-  color: #6b7280;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.period-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.small-btn {
-  margin-top: 8px;
-  width: 100%;
-  background: var(--primary);
-  color: white;
+.transaction-actions {
+  display: flex;
+  gap: 5px;
+  flex: none;
 }
 
 .edit-btn {
   background: #6b7280;
   color: white;
-  padding: 7px 10px;
-  font-size: 0.8rem;
-  flex: 0 0 auto;
+  padding: 7px 9px;
+  font-size: 0.75rem;
 }
 
 .delete-btn {
   background: var(--expense);
   color: white;
-  padding: 7px 10px;
+  padding: 7px 9px;
+  font-size: 0.75rem;
+}
+
+.sync-status {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 10px auto;
   font-size: 0.8rem;
-  flex: 0 0 auto;
+  color: #6b7280;
+  text-align: center;
 }
 
-.transaction-actions {
-  display: flex;
-  gap: 5px;
-}
+/* =========================
+   MOBILE
+   ========================= */
 
-.type-select {
-  padding: 7px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+@media (max-width: 420px) {
+
+  body {
+    padding: 14px;
+  }
+
+  .period-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-item {
+    align-items: flex-start;
+  }
+
+  .transaction-actions {
+    flex-direction: column;
+  }
+
 }
 </style>
-
 </head>
 
 <body>
 
-<div class="app-container">
+<!-- =========================
+     TOP BAR
+     ========================= -->
 
-  <div class="sync-status" id="syncStatus">
-    Loading tracker...
+<div class="top-bar">
+
+  <button
+    class="menu-button"
+    onclick="toggleMenu()"
+    aria-label="Open menu"
+  >
+    ☰
+  </button>
+
+  <div
+    class="menu-title"
+    id="pageTitle"
+  >
+    Dashboard
   </div>
 
-  <!-- DASHBOARD -->
+  <div style="width:44px;"></div>
+
+</div>
+
+
+<!-- =========================
+     MENU
+     ========================= -->
+
+<div
+  class="menu"
+  id="menu"
+>
+
+  <button
+    class="menu-item active"
+    id="dashboardMenu"
+    onclick="showPage('dashboard')"
+  >
+    Dashboard
+  </button>
+
+  <button
+    class="menu-item"
+    id="historyMenu"
+    onclick="showPage('history')"
+  >
+    Transaction History
+  </button>
+
+</div>
+
+
+<div
+  class="sync-status"
+  id="syncStatus"
+>
+  Loading...
+</div>
+
+
+<div class="app-container">
+
+
+<!-- =====================================================
+     DASHBOARD PAGE
+     ===================================================== -->
+
+<div
+  id="dashboardPage"
+  class="page active"
+>
+
+
+  <!-- BUDGET OVERVIEW -->
 
   <div class="card">
 
-```
-<h2>Budget Overview</h2>
+    <h2>Budget Overview</h2>
 
-<div class="dashboard-grid">
+    <div class="dashboard-grid">
 
-  <div class="stat-box">
-    <div class="stat-label">Total Balance</div>
-    <div class="stat-value" id="totalBalance">₹0</div>
-  </div>
 
-  <div class="stat-box">
-    <div class="stat-label">Days Left</div>
-    <div class="stat-value" id="daysLeft">0</div>
-  </div>
+      <div class="stat-box">
 
-  <div class="stat-box">
-    <div class="stat-label">Daily Spend</div>
-    <div class="stat-value" id="dailySpend">
-      ₹0 / day
+        <div class="stat-label">
+          Total Balance
+        </div>
+
+        <div
+          class="stat-value"
+          id="totalBalance"
+        >
+          ₹0
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div class="stat-label">
+          Days Left
+        </div>
+
+        <div
+          class="stat-value"
+          id="daysLeft"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-box"
+        style="grid-column: span 2;"
+      >
+
+        <div class="stat-label">
+          Daily Spend Allowance
+        </div>
+
+        <div
+          class="stat-value"
+          id="dailySpend"
+          style="color:var(--primary);"
+        >
+          ₹0 / day
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div class="stat-label">
+          Last Period Saved
+        </div>
+
+        <div
+          class="stat-value"
+          id="lastMonthSaved"
+        >
+          ₹0
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div class="stat-label">
+          Carried Forward
+        </div>
+
+        <div
+          class="stat-value"
+          id="carriedForward"
+        >
+          ₹0
+        </div>
+
+      </div>
+
+
     </div>
-  </div>
-
-  <div class="stat-box">
-    <div class="stat-label">Last Month Saved</div>
-    <div class="stat-value" id="lastMonthSaved">
-      ₹0
-    </div>
-  </div>
-
-  <div class="stat-box" style="grid-column: span 2;">
-    <div class="stat-label">Carried Forward</div>
-    <div class="stat-value" id="carriedForward">
-      ₹0
-    </div>
-  </div>
-
-</div>
-```
 
   </div>
+
 
   <!-- BUDGET PERIOD -->
 
   <div class="card">
 
-```
-<h2>Budget Period</h2>
+    <h2>Budget Period</h2>
 
-<div class="period-grid">
+    <div class="period-grid">
 
-  <div>
-    <div class="stat-label">Start Date</div>
-    <input type="date" id="periodStart">
-  </div>
 
-  <div>
-    <div class="stat-label">End Date</div>
-    <input type="date" id="periodEnd">
-  </div>
+      <div>
 
-</div>
+        <div class="stat-label">
+          Start Date
+        </div>
 
-<button class="small-btn" onclick="savePeriod()">
-  Save Budget Period
-</button>
-```
+        <input
+          type="date"
+          id="periodStart"
+        >
 
-  </div>
+      </div>
 
-  <!-- ADD TRANSACTION -->
 
-  <div class="card">
+      <div>
 
-```
-<h2>Log Transaction</h2>
+        <div class="stat-label">
+          End Date
+        </div>
 
-<div class="form-group">
+        <input
+          type="date"
+          id="periodEnd"
+        >
 
-  <input
-    type="text"
-    id="txNote"
-    placeholder="Description"
-  >
+      </div>
 
-  <input
-    type="number"
-    id="txAmount"
-    placeholder="Amount (₹)"
-    min="0"
-  >
 
-</div>
+    </div>
 
-<div class="btn-group">
 
-  <button
-    class="btn-add"
-    onclick="addTransaction('income')"
-  >
-    + Add Income
-  </button>
-
-  <button
-    class="btn-sub"
-    onclick="addTransaction('expense')"
-  >
-    - Add Expense
-  </button>
-
-</div>
-```
+    <button
+      class="small-btn"
+      onclick="savePeriod()"
+    >
+      Save Budget Period
+    </button>
 
   </div>
+
 
   <!-- AFFORDABILITY -->
 
   <div class="card">
 
-```
-<h2>Can I Afford This?</h2>
+    <h2>Can I Afford This?</h2>
 
-<div class="form-group">
+    <div class="form-group">
 
-  <input
-    type="number"
-    id="simAmount"
-    placeholder="Planned purchase amount (₹)"
-    min="0"
-  >
+      <input
+        type="number"
+        id="simAmount"
+        placeholder="Planned purchase amount (₹)"
+        min="0"
+      >
+
+    </div>
+
+
+    <button
+      class="btn-sim"
+      style="width:100%;"
+      onclick="checkAffordability()"
+    >
+      Calculate Impact
+    </button>
+
+
+    <div
+      id="simResult"
+      class="sim-result"
+      style="display:none;"
+    ></div>
+
+  </div>
+
 
 </div>
 
-<button
-  class="btn-sim"
-  style="width:100%;"
-  onclick="checkAffordability()"
->
-  Calculate Impact
-</button>
+
+<!-- =====================================================
+     TRANSACTION HISTORY PAGE
+     ===================================================== -->
 
 <div
-  id="simResult"
-  class="sim-result"
-  style="display:none;"
-></div>
-```
+  id="historyPage"
+  class="page"
+>
+
+
+  <!-- ADD TRANSACTION -->
+
+  <div class="card">
+
+    <h2>Log Transaction</h2>
+
+
+    <div class="form-group">
+
+      <input
+        type="text"
+        id="txNote"
+        placeholder="Description (e.g. Groceries, Rent)"
+      >
+
+      <input
+        type="number"
+        id="txAmount"
+        placeholder="Amount (₹)"
+        min="0"
+      >
+
+    </div>
+
+
+    <div class="btn-group">
+
+      <button
+        class="btn-add"
+        onclick="addTransaction('income')"
+      >
+        + Add Income
+      </button>
+
+      <button
+        class="btn-sub"
+        onclick="addTransaction('expense')"
+      >
+        - Add Expense
+      </button>
+
+    </div>
 
   </div>
+
 
   <!-- TRANSACTION HISTORY -->
 
   <div class="card">
 
-```
-<h2>Transaction History</h2>
+    <h2>Transaction History</h2>
 
-<ul
-  class="history-list"
-  id="historyList"
-></ul>
-```
+    <ul
+      class="history-list"
+      id="historyList"
+    ></ul>
 
   </div>
 
+
 </div>
+
+
+</div>
+
 
 <script>
 
-/* =========================================================
-   SUPABASE CONNECTION
-   ========================================================= */
+/* =====================================================
+   SUPABASE
+   ===================================================== */
 
 const SUPABASE_URL =
   "https://dozrkzhthwhsiuoayevn.supabase.co";
@@ -414,9 +720,9 @@ const supabaseClient =
   );
 
 
-/* =========================================================
+/* =====================================================
    VARIABLES
-   ========================================================= */
+   ===================================================== */
 
 let transactions = [];
 
@@ -427,81 +733,131 @@ let periodEnd =
   localStorage.getItem("periodEnd");
 
 
-/* =========================================================
-   DEFAULT PERIOD
-   ========================================================= */
+/* =====================================================
+   MENU
+   ===================================================== */
 
-function getDefaultPeriod() {
+function toggleMenu() {
 
-  const today = new Date();
+  const menu =
+    document.getElementById("menu");
 
-  const year = today.getFullYear();
-  const month = today.getMonth();
+  menu.classList.toggle("open");
 
-  let start;
-  let end;
+}
 
-  if (today.getDate() >= 3) {
 
-    start = new Date(
-      year,
-      month,
-      3
+function showPage(page) {
+
+  const dashboardPage =
+    document.getElementById(
+      "dashboardPage"
     );
 
-    end = new Date(
-      year,
-      month + 1,
-      3
+  const historyPage =
+    document.getElementById(
+      "historyPage"
     );
 
-  } else {
-
-    start = new Date(
-      year,
-      month - 1,
-      3
+  const dashboardMenu =
+    document.getElementById(
+      "dashboardMenu"
     );
 
-    end = new Date(
-      year,
-      month,
-      3
+  const historyMenu =
+    document.getElementById(
+      "historyMenu"
     );
+
+  const pageTitle =
+    document.getElementById(
+      "pageTitle"
+    );
+
+
+  if (page === "dashboard") {
+
+    dashboardPage.classList.add(
+      "active"
+    );
+
+    historyPage.classList.remove(
+      "active"
+    );
+
+    dashboardMenu.classList.add(
+      "active"
+    );
+
+    historyMenu.classList.remove(
+      "active"
+    );
+
+    pageTitle.innerText =
+      "Dashboard";
 
   }
 
-  return {
-    start: formatDate(start),
-    end: formatDate(end)
-  };
+
+  if (page === "history") {
+
+    dashboardPage.classList.remove(
+      "active"
+    );
+
+    historyPage.classList.add(
+      "active"
+    );
+
+    dashboardMenu.classList.remove(
+      "active"
+    );
+
+    historyMenu.classList.add(
+      "active"
+    );
+
+    pageTitle.innerText =
+      "Transaction History";
+
+  }
+
+
+  document
+    .getElementById("menu")
+    .classList.remove("open");
+
 }
 
 
-/* =========================================================
+/* =====================================================
    DATE HELPERS
-   ========================================================= */
+   ===================================================== */
 
 function formatDate(date) {
 
-  const y = date.getFullYear();
+  const year =
+    date.getFullYear();
 
-  const m =
-    String(date.getMonth() + 1)
-    .padStart(2, "0");
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
 
-  const d =
-    String(date.getDate())
-    .padStart(2, "0");
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
 
-  return `${y}-${m}-${d}`;
+  return `${year}-${month}-${day}`;
+
 }
 
 
-function parseDate(dateString) {
+function parseDate(value) {
 
   const parts =
-    dateString.split("-");
+    value.split("-");
 
   return new Date(
     Number(parts[0]),
@@ -512,7 +868,10 @@ function parseDate(dateString) {
 }
 
 
-function daysBetween(start, end) {
+function daysBetween(
+  start,
+  end
+) {
 
   const startDate =
     parseDate(start);
@@ -520,25 +879,96 @@ function daysBetween(start, end) {
   const endDate =
     parseDate(end);
 
-  const difference =
-    endDate.getTime() -
-    startDate.getTime();
-
   return Math.round(
-    difference /
+    (
+      endDate.getTime() -
+      startDate.getTime()
+    ) /
     (1000 * 60 * 60 * 24)
   );
 
 }
 
 
-/* =========================================================
-   PERIOD
-   ========================================================= */
+/* =====================================================
+   DEFAULT PERIOD
+   ===================================================== */
+
+function getDefaultPeriod() {
+
+  const today =
+    new Date();
+
+  const year =
+    today.getFullYear();
+
+  const month =
+    today.getMonth();
+
+  let start;
+  let end;
+
+
+  if (
+    today.getDate() >= 3
+  ) {
+
+    start =
+      new Date(
+        year,
+        month,
+        3
+      );
+
+    end =
+      new Date(
+        year,
+        month + 1,
+        3
+      );
+
+  } else {
+
+    start =
+      new Date(
+        year,
+        month - 1,
+        3
+      );
+
+    end =
+      new Date(
+        year,
+        month,
+        3
+      );
+
+  }
+
+
+  return {
+
+    start:
+      formatDate(start),
+
+    end:
+      formatDate(end)
+
+  };
+
+}
+
+
+/* =====================================================
+   LOAD PERIOD
+   ===================================================== */
 
 function loadPeriod() {
 
-  if (!periodStart || !periodEnd) {
+  if (
+    !periodStart ||
+    !periodEnd
+  ) {
 
     const defaultPeriod =
       getDefaultPeriod();
@@ -561,16 +991,23 @@ function loadPeriod() {
 
   }
 
+
   document.getElementById(
     "periodStart"
-  ).value = periodStart;
+  ).value =
+    periodStart;
 
   document.getElementById(
     "periodEnd"
-  ).value = periodEnd;
+  ).value =
+    periodEnd;
 
 }
 
+
+/* =====================================================
+   SAVE PERIOD
+   ===================================================== */
 
 function savePeriod() {
 
@@ -584,7 +1021,11 @@ function savePeriod() {
       "periodEnd"
     ).value;
 
-  if (!start || !end) {
+
+  if (
+    !start ||
+    !end
+  ) {
 
     alert(
       "Please select both dates."
@@ -594,7 +1035,10 @@ function savePeriod() {
 
   }
 
-  if (start >= end) {
+
+  if (
+    start >= end
+  ) {
 
     alert(
       "End date must be after start date."
@@ -604,8 +1048,13 @@ function savePeriod() {
 
   }
 
-  periodStart = start;
-  periodEnd = end;
+
+  periodStart =
+    start;
+
+  periodEnd =
+    end;
+
 
   localStorage.setItem(
     "periodStart",
@@ -617,7 +1066,9 @@ function savePeriod() {
     periodEnd
   );
 
+
   updateUI();
+
 
   alert(
     "Budget period saved."
@@ -626,9 +1077,9 @@ function savePeriod() {
 }
 
 
-/* =========================================================
-   SUPABASE LOAD
-   ========================================================= */
+/* =====================================================
+   FETCH TRANSACTIONS
+   ===================================================== */
 
 async function fetchCloudData() {
 
@@ -637,17 +1088,27 @@ async function fetchCloudData() {
       "syncStatus"
     );
 
+
+  status.innerText =
+    "Syncing with Supabase...";
+
+
   try {
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("transactions")
-      .select("*")
-      .order("date", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+        .from("transactions")
+        .select("*")
+        .order(
+          "date",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
@@ -663,13 +1124,17 @@ async function fetchCloudData() {
 
     }
 
+
     transactions =
       data || [];
+
 
     status.innerText =
       "Connected to Supabase";
 
+
     updateUI();
+
 
   } catch (error) {
 
@@ -683,9 +1148,9 @@ async function fetchCloudData() {
 }
 
 
-/* =========================================================
+/* =====================================================
    ADD TRANSACTION
-   ========================================================= */
+   ===================================================== */
 
 async function addTransaction(type) {
 
@@ -699,6 +1164,7 @@ async function addTransaction(type) {
       "txAmount"
     );
 
+
   const note =
     noteInput.value.trim() ||
     (
@@ -707,10 +1173,12 @@ async function addTransaction(type) {
         : "Expense"
     );
 
+
   const amount =
     parseFloat(
       amountInput.value
     );
+
 
   if (
     isNaN(amount) ||
@@ -734,9 +1202,10 @@ async function addTransaction(type) {
 
     type: type,
 
-    date: formatDate(
-      new Date()
-    )
+    date:
+      formatDate(
+        new Date()
+      )
 
   };
 
@@ -745,6 +1214,7 @@ async function addTransaction(type) {
     document.getElementById(
       "syncStatus"
     );
+
 
   status.innerText =
     "Saving transaction...";
@@ -755,11 +1225,12 @@ async function addTransaction(type) {
     const {
       data,
       error
-    } = await supabaseClient
-      .from("transactions")
-      .insert([payload])
-      .select()
-      .single();
+    } =
+      await supabaseClient
+        .from("transactions")
+        .insert([payload])
+        .select()
+        .single();
 
 
     if (error) {
@@ -786,12 +1257,15 @@ async function addTransaction(type) {
       data
     );
 
+
     updateUI();
 
 
-    noteInput.value = "";
+    noteInput.value =
+      "";
 
-    amountInput.value = "";
+    amountInput.value =
+      "";
 
 
     status.innerText =
@@ -814,9 +1288,9 @@ async function addTransaction(type) {
 }
 
 
-/* =========================================================
-   UPDATE TRANSACTION
-   ========================================================= */
+/* =====================================================
+   EDIT TRANSACTION
+   ===================================================== */
 
 async function editTransaction(id) {
 
@@ -827,7 +1301,9 @@ async function editTransaction(id) {
         String(id)
     );
 
-  if (!transaction) return;
+
+  if (!transaction)
+    return;
 
 
   const newNote =
@@ -836,7 +1312,10 @@ async function editTransaction(id) {
       transaction.note
     );
 
-  if (newNote === null)
+
+  if (
+    newNote === null
+  )
     return;
 
 
@@ -846,12 +1325,18 @@ async function editTransaction(id) {
       transaction.amount
     );
 
-  if (newAmount === null)
+
+  if (
+    newAmount === null
+  )
     return;
 
 
   const amount =
-    parseFloat(newAmount);
+    parseFloat(
+      newAmount
+    );
+
 
   if (
     isNaN(amount) ||
@@ -873,6 +1358,7 @@ async function editTransaction(id) {
       transaction.type
     );
 
+
   if (
     newType !== "income" &&
     newType !== "expense"
@@ -890,20 +1376,27 @@ async function editTransaction(id) {
   const {
     data,
     error
-  } = await supabaseClient
-    .from("transactions")
-    .update({
+  } =
+    await supabaseClient
+      .from("transactions")
+      .update({
 
-      note: newNote,
+        note:
+          newNote,
 
-      amount: amount,
+        amount:
+          amount,
 
-      type: newType
+        type:
+          newType
 
-    })
-    .eq("id", id)
-    .select()
-    .single();
+      })
+      .eq(
+        "id",
+        id
+      )
+      .select()
+      .single();
 
 
   if (error) {
@@ -931,7 +1424,9 @@ async function editTransaction(id) {
     );
 
 
-  if (index !== -1) {
+  if (
+    index !== -1
+  ) {
 
     transactions[index] =
       data;
@@ -944,9 +1439,9 @@ async function editTransaction(id) {
 }
 
 
-/* =========================================================
+/* =====================================================
    DELETE TRANSACTION
-   ========================================================= */
+   ===================================================== */
 
 async function deleteTransaction(id) {
 
@@ -955,16 +1450,21 @@ async function deleteTransaction(id) {
       "Delete this transaction?"
     );
 
+
   if (!confirmed)
     return;
 
 
   const {
     error
-  } = await supabaseClient
-    .from("transactions")
-    .delete()
-    .eq("id", id);
+  } =
+    await supabaseClient
+      .from("transactions")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
 
 
   if (error) {
@@ -997,23 +1497,39 @@ async function deleteTransaction(id) {
 }
 
 
-/* =========================================================
+/* =====================================================
    BALANCE
-   ========================================================= */
+   ===================================================== */
 
 function calculateBalance(
-  transactionList
+  list
 ) {
 
-  return transactionList.reduce(
-    (balance, item) => {
+  return list.reduce(
+    (
+      balance,
+      item
+    ) => {
 
       const amount =
-        Number(item.amount) || 0;
+        Number(
+          item.amount
+        ) || 0;
 
-      return item.type === "income"
-        ? balance + amount
-        : balance - amount;
+
+      if (
+        item.type ===
+        "income"
+      ) {
+
+        return balance +
+          amount;
+
+      }
+
+
+      return balance -
+        amount;
 
     },
     0
@@ -1022,9 +1538,9 @@ function calculateBalance(
 }
 
 
-/* =========================================================
-   CURRENT PERIOD
-   ========================================================= */
+/* =====================================================
+   CURRENT PERIOD TRANSACTIONS
+   ===================================================== */
 
 function getCurrentPeriodTransactions() {
 
@@ -1039,30 +1555,26 @@ function getCurrentPeriodTransactions() {
 
 
   return transactions.filter(
-    item => {
-
-      return (
-        item.date >= periodStart &&
-        item.date < periodEnd
-      );
-
-    }
+    item =>
+      item.date >=
+        periodStart &&
+      item.date <
+        periodEnd
   );
 
 }
 
 
-/* =========================================================
-   LAST PERIOD
-   ========================================================= */
+/* =====================================================
+   PREVIOUS PERIOD
+   ===================================================== */
 
 function getPreviousPeriod() {
 
   const start =
-    parseDate(periodStart);
-
-  const end =
-    parseDate(periodEnd);
+    parseDate(
+      periodStart
+    );
 
   const duration =
     daysBetween(
@@ -1073,17 +1585,20 @@ function getPreviousPeriod() {
 
   const previousEnd =
     new Date(
-      start.getTime()
+      start
     );
+
 
   const previousStart =
     new Date(
-      start.getTime()
+      start
     );
+
 
   previousEnd.setDate(
     previousEnd.getDate() - 1
   );
+
 
   previousStart.setDate(
     previousStart.getDate() -
@@ -1094,19 +1609,23 @@ function getPreviousPeriod() {
   return {
 
     start:
-      formatDate(previousStart),
+      formatDate(
+        previousStart
+      ),
 
     end:
-      formatDate(previousEnd)
+      formatDate(
+        previousEnd
+      )
 
   };
 
 }
 
 
-/* =========================================================
-   LAST MONTH SAVED
-   ========================================================= */
+/* =====================================================
+   LAST PERIOD SAVED
+   ===================================================== */
 
 function calculateLastMonthSaved() {
 
@@ -1116,14 +1635,11 @@ function calculateLastMonthSaved() {
 
   const previousTransactions =
     transactions.filter(
-      item => {
-
-        return (
-          item.date >= previous.start &&
-          item.date <= previous.end
-        );
-
-      }
+      item =>
+        item.date >=
+          previous.start &&
+        item.date <=
+          previous.end
     );
 
 
@@ -1134,9 +1650,9 @@ function calculateLastMonthSaved() {
 }
 
 
-/* =========================================================
-   UPDATE UI
-   ========================================================= */
+/* =====================================================
+   UPDATE DASHBOARD
+   ===================================================== */
 
 function updateUI() {
 
@@ -1204,7 +1720,8 @@ function updateUI() {
 
   const dailySpend =
     daysLeft > 0
-      ? availableMoney / daysLeft
+      ? availableMoney /
+        daysLeft
       : 0;
 
 
@@ -1246,9 +1763,9 @@ function updateUI() {
 }
 
 
-/* =========================================================
-   HISTORY
-   ========================================================= */
+/* =====================================================
+   TRANSACTION HISTORY
+   ===================================================== */
 
 function renderHistory() {
 
@@ -1258,21 +1775,27 @@ function renderHistory() {
     );
 
 
-  list.innerHTML = "";
+  list.innerHTML =
+    "";
 
 
   if (
     transactions.length === 0
   ) {
 
-    list.innerHTML =
-      `<li style="
+    list.innerHTML = `
+
+      <li style="
         text-align:center;
         color:#9ca3af;
-        padding:10px;
+        padding:20px;
       ">
+
         No transactions yet.
-      </li>`;
+
+      </li>
+
+    `;
 
     return;
 
@@ -1293,23 +1816,26 @@ function renderHistory() {
 
 
       const sign =
-        item.type === "income"
+        item.type ===
+          "income"
           ? "+"
           : "-";
 
 
       const cssClass =
-        item.type === "income"
+        item.type ===
+          "income"
           ? "amount-income"
           : "amount-expense";
 
 
       li.innerHTML = `
 
-        <div style="flex:1">
+        <div style="flex:1; min-width:0;">
 
           <div style="
             font-weight:500;
+            word-break:break-word;
           ">
             ${escapeHtml(
               item.note || ""
@@ -1319,6 +1845,7 @@ function renderHistory() {
           <div style="
             font-size:0.75rem;
             color:#9ca3af;
+            margin-top:3px;
           ">
             ${item.date}
           </div>
@@ -1336,7 +1863,9 @@ function renderHistory() {
         </div>
 
 
-        <div class="transaction-actions">
+        <div
+          class="transaction-actions"
+        >
 
           <button
             class="edit-btn"
@@ -1357,7 +1886,9 @@ function renderHistory() {
       `;
 
 
-      list.appendChild(li);
+      list.appendChild(
+        li
+      );
 
     }
   );
@@ -1365,9 +1896,9 @@ function renderHistory() {
 }
 
 
-/* =========================================================
+/* =====================================================
    ESCAPE HTML
-   ========================================================= */
+   ===================================================== */
 
 function escapeHtml(text) {
 
@@ -1376,16 +1907,17 @@ function escapeHtml(text) {
       "div"
     );
 
-  div.textContent = text;
+  div.textContent =
+    text;
 
   return div.innerHTML;
 
 }
 
 
-/* =========================================================
+/* =====================================================
    AFFORDABILITY
-   ========================================================= */
+   ===================================================== */
 
 function checkAffordability() {
 
@@ -1449,11 +1981,7 @@ function checkAffordability() {
     );
 
 
-  let daysLeft =
-    daysBetween(
-      today,
-      periodEnd
-    );
+  let daysLeft = 0;
 
 
   if (
@@ -1466,11 +1994,22 @@ function checkAffordability() {
         periodEnd
       );
 
+  } else if (
+    today < periodEnd
+  ) {
+
+    daysLeft =
+      daysBetween(
+        today,
+        periodEnd
+      );
+
   }
 
 
   const remaining =
-    available - cost;
+    available -
+    cost;
 
 
   result.style.display =
@@ -1497,12 +2036,12 @@ function checkAffordability() {
 
     `;
 
-
   } else {
 
     const newDaily =
       daysLeft > 0
-        ? remaining / daysLeft
+        ? remaining /
+          daysLeft
         : 0;
 
 
@@ -1514,7 +2053,8 @@ function checkAffordability() {
 
       You can afford this!<br>
 
-      Your new daily allowance would be
+      After this purchase,
+      your daily allowance would be
 
       <strong>
         ₹${newDaily.toFixed(2)} / day
@@ -1527,9 +2067,9 @@ function checkAffordability() {
 }
 
 
-/* =========================================================
-   START APP
-   ========================================================= */
+/* =====================================================
+   START
+   ===================================================== */
 
 loadPeriod();
 
@@ -1541,3 +2081,4 @@ fetchCloudData();
 
 </body>
 </html>
+```
