@@ -1,489 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
-  <title>Cloud Budget Tracker (Google Sheets)</title>
-
-
-  <style>
-
-    :root {
-
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --primary: #2563eb;
-      --income: #16a34a;
-      --expense: #dc2626;
-      --text: #1f2937;
-      --border: #e5e7eb;
-
-    }
-
-
-    body {
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
-
-      background-color:
-        var(--bg-color);
-
-      color:
-        var(--text);
-
-      margin: 0;
-
-      padding: 20px;
-
-      display: flex;
-
-      justify-content: center;
-
-    }
-
-
-    .app-container {
-
-      width: 100%;
-
-      max-width: 500px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 16px;
-
-    }
-
-
-    .card {
-
-      background:
-        var(--card-bg);
-
-      border-radius: 12px;
-
-      padding: 20px;
-
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.06);
-
-      border:
-        1px solid var(--border);
-
-    }
-
-
-    h2 {
-
-      margin-top: 0;
-
-      margin-bottom: 12px;
-
-      font-size: 1.1rem;
-
-    }
-
-
-    .dashboard-grid {
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 12px;
-
-      margin-top: 10px;
-
-    }
-
-
-    .stat-box {
-
-      background:
-        #f8fafc;
-
-      padding: 12px;
-
-      border-radius: 8px;
-
-      border:
-        1px solid var(--border);
-
-    }
-
-
-    .stat-label {
-
-      font-size: 0.8rem;
-
-      color: #6b7280;
-
-      margin-bottom: 4px;
-
-    }
-
-
-    .stat-value {
-
-      font-size: 1.25rem;
-
-      font-weight: 700;
-
-    }
-
-
-    .period-info {
-
-      margin-top: 12px;
-
-      padding: 10px;
-
-      background: #eff6ff;
-
-      border: 1px solid #bfdbfe;
-
-      border-radius: 8px;
-
-      color: #1e40af;
-
-      font-size: 0.85rem;
-
-      text-align: center;
-
-    }
-
-
-    .form-group {
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 8px;
-
-      margin-bottom: 12px;
-
-    }
-
-
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select {
-
-      padding: 10px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 6px;
-
-      font-size: 1rem;
-
-      box-sizing: border-box;
-
-      width: 100%;
-
-      background: white;
-
-    }
-
-
-    label {
-
-      font-size: 0.9rem;
-
-      font-weight: 600;
-
-    }
-
-
-    .btn-group {
-
-      display: flex;
-
-      gap: 8px;
-
-    }
-
-
-    button {
-
-      flex: 1;
-
-      padding: 10px;
-
-      border: none;
-
-      border-radius: 6px;
-
-      font-size: 0.95rem;
-
-      font-weight: 600;
-
-      cursor: pointer;
-
-    }
-
-
-    .btn-add {
-
-      background:
-        var(--income);
-
-      color: white;
-
-    }
-
-
-    .btn-sub {
-
-      background:
-        var(--expense);
-
-      color: white;
-
-    }
-
-
-    .btn-sim {
-
-      background:
-        var(--primary);
-
-      color: white;
-
-    }
-
-
-    .btn-edit {
-
-      background: #f3f4f6;
-
-      color: #374151;
-
-      padding: 6px 10px;
-
-      font-size: 0.75rem;
-
-      flex: none;
-
-      margin-left: 8px;
-
-    }
-
-
-    .btn-save {
-
-      background:
-        var(--primary);
-
-      color: white;
-
-    }
-
-
-    .btn-cancel {
-
-      background: #e5e7eb;
-
-      color: #374151;
-
-    }
-
-
-    .sim-result {
-
-      margin-top: 10px;
-
-      padding: 10px;
-
-      border-radius: 6px;
-
-      font-size: 0.9rem;
-
-      background: #f0fdf4;
-
-      border: 1px solid #bbf7d0;
-
-      color: #166534;
-
-    }
-
-
-    .sim-result.warning {
-
-      background: #fef2f2;
-
-      border-color: #fecaca;
-
-      color: #991b1b;
-
-    }
-
-
-    .history-list {
-
-      list-style: none;
-
-      padding: 0;
-
-      margin: 0;
-
-      max-height: 300px;
-
-      overflow-y: auto;
-
-    }
-
-
-    .history-item {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      padding: 10px 0;
-
-      border-bottom:
-        1px solid var(--border);
-
-    }
-
-
-    .history-left {
-
-      min-width: 0;
-
-      flex: 1;
-
-    }
-
-
-    .history-right {
-
-      display: flex;
-
-      align-items: center;
-
-      white-space: nowrap;
-
-    }
-
-
-    .amount-income {
-
-      color:
-        var(--income);
-
-      font-weight: 600;
-
-    }
-
-
-    .amount-expense {
-
-      color:
-        var(--expense);
-
-      font-weight: 600;
-
-    }
-
-
-    .sync-status {
-
-      font-size: 0.8rem;
-
-      color: #6b7280;
-
-      text-align: center;
-
-      margin-bottom: 8px;
-
-    }
-
-
-    .setting-status {
-
-      font-size: 0.8rem;
-
-      color: #6b7280;
-
-      text-align: center;
-
-      margin-top: 8px;
-
-    }
-
-
-    .edit-box {
-
-      margin-top: 10px;
-
-      padding: 12px;
-
-      background: #f8fafc;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 8px;
-
-    }
-
-
-    .edit-buttons {
-
-      display: flex;
-
-      gap: 8px;
-
-      margin-top: 10px;
-
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+<title>Cloud Budget Tracker</title>
+<style> :root { --bg-color: #f4f6f9; --card-bg: #ffffff; --primary: #2563eb; --income: #16a34a; --expense: #dc2626; --text: #1f2937; --border: #e5e7eb; --muted: #6b7280; } * { box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; min-height: 100vh; } /* ===================================================== TOP BAR ===================================================== */ .top-bar { height: 60px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 100; } .menu-button { width: 40px; height: 40px; border: none; background: transparent; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; padding: 0; flex: none; } .menu-button span { width: 23px; height: 2px; background: var(--text); border-radius: 2px; display: block; } .page-title { margin-left: 14px; font-size: 1.1rem; font-weight: 700; } /* ===================================================== SIDE MENU ===================================================== */ .side-menu { position: fixed; top: 0; left: -280px; width: 270px; height: 100vh; background: white; z-index: 200; box-shadow: 4px 0 15px rgba(0,0,0,0.12); transition: left 0.25s ease; padding-top: 20px; } .side-menu.open { left: 0; } .menu-header { padding: 20px; font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid var(--border); margin-bottom: 10px; } .menu-item { width: 100%; padding: 15px 20px; border: none; background: transparent; text-align: left; font-size: 1rem; color: var(--text); cursor: pointer; display: block; } .menu-item:hover { background: #f3f4f6; } .menu-item.active { background: #eff6ff; color: var(--primary); font-weight: 600; border-right: 3px solid var(--primary); } .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 150; display: none; } .menu-overlay.show { display: block; } /* ===================================================== APP CONTAINER ===================================================== */ .app-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; } .sync-status { font-size: 0.8rem; color: var(--muted); text-align: center; margin-bottom: 16px; } /* ===================================================== PAGES ===================================================== */ .page { display: none; } .page.active { display: block; } /* ===================================================== CARDS ===================================================== */ .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); } h2 { margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; } /* ===================================================== DASHBOARD ===================================================== */ .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .stat-box { background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border); } .stat-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; } .stat-value { font-size: 1.2rem; font-weight: 700; } .full-stat { grid-column: span 2; } .period-info { margin-top: 15px; padding: 11px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.85rem; text-align: center; } /* ===================================================== FORMS ===================================================== */ .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; } label { font-size: 0.85rem; font-weight: 600; } input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 7px; font-size: 1rem; background: white; color: var(--text); } input:focus, select:focus { outline: none; border-color: var(--primary); } /* ===================================================== BUTTONS ===================================================== */ button { cursor: pointer; font-family: inherit; } .btn-group { display: flex; gap: 8px; } .btn { flex: 1; padding: 11px; border: none; border-radius: 7px; font-size: 0.9rem; font-weight: 600; } .btn-add { background: var(--income); color: white; } .btn-sub { background: var(--expense); color: white; } .btn-primary { background: var(--primary); color: white; } .btn-secondary { background: #e5e7eb; color: #374151; } /* ===================================================== SIMULATOR ===================================================== */ .sim-result { margin-top: 10px; padding: 11px; border-radius: 7px; font-size: 0.9rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; } .sim-result.warning { background: #fef2f2; border-color: #fecaca; color: #991b1b; } /* ===================================================== TRANSACTION HISTORY ===================================================== */ .history-list { list-style: none; padding: 0; margin: 0; } .history-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--border); } .history-item:last-child { border-bottom: none; } .history-left { min-width: 0; flex: 1; } .history-note { font-weight: 500; word-break: break-word; } .history-date { font-size: 0.75rem; color: #9ca3af; margin-top: 3px; } .history-right { display: flex; align-items: center; gap: 7px; white-space: nowrap; } .amount-income { color: var(--income); font-weight: 600; } .amount-expense { color: var(--expense); font-weight: 600; } .btn-edit { border: none; background: #f3f4f6; color: #374151; padding: 6px 9px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; flex: none; } .btn-edit:hover { background: #e5e7eb; } /* ===================================================== EDIT BOX ===================================================== */ .edit-box { margin: 5px 0 10px; padding: 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; } .edit-buttons { display: flex; gap: 8px; } .edit-buttons button { flex: 1; padding: 9px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; } .empty-history { text-align: center; color: #9ca3af; padding: 25px 10px; } /* ===================================================== MOBILE ===================================================== */ @media (max-width: 400px) { .app-container { padding: 14px; } .card { padding: 16px; } .dashboard-grid { gap: 8px; } .stat-box { padding: 11px; } .stat-value { font-size: 1.05rem; } } </style>
 </head>
-
-
 <body>
+<!-- ===================================================== SIDE MENU ===================================================== -->
+<div class="side-menu" id="sideMenu" >
+<div class="menu-header">
+  Budget Tracker
+</div>
 
 
+<button
+  class="menu-item active"
+  id="dashboardMenu"
+  onclick="showPage('dashboard')"
+>
+  Dashboard
+</button>
+
+
+<button
+  class="menu-item"
+  id="historyMenu"
+  onclick="showPage('history')"
+>
+  Transaction History
+</button>
+</div>
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()" ></div>
+<!-- ===================================================== TOP BAR ===================================================== -->
+<div class="top-bar">
+<button
+  class="menu-button"
+  onclick="toggleMenu()"
+  aria-label="Open menu"
+>
+
+  <span></span>
+  <span></span>
+  <span></span>
+
+</button>
+
+
+<div
+  class="page-title"
+  id="pageTitle"
+>
+  Dashboard
+</div>
+</div>
+<!-- ===================================================== MAIN ===================================================== -->
 <div class="app-container">
+<div
+  class="sync-status"
+  id="syncStatus"
+>
+  Syncing with Google Sheets...
+</div>
 
 
-  <div
-    class="sync-status"
-    id="syncStatus"
-  >
-    Syncing with Google Sheets...
-  </div>
+<!-- ===================================================
+     DASHBOARD PAGE
+=================================================== -->
+
+<div
+  class="page active"
+  id="dashboardPage"
+>
 
 
-  <!-- DASHBOARD -->
+  <!-- BUDGET OVERVIEW -->
 
   <div class="card">
 
-    <h2>Budget Overview</h2>
+    <h2>
+      Budget Overview
+    </h2>
 
 
     <div class="dashboard-grid">
@@ -524,15 +123,15 @@
       <div class="stat-box">
 
         <div class="stat-label">
-          Daily Spend Allowance
+          Last Month Saved
         </div>
 
         <div
           class="stat-value"
-          id="dailySpend"
-          style="color: var(--primary);"
+          id="lastMonthSaved"
+          style="color: var(--income);"
         >
-          ₹0 / day
+          ₹0
         </div>
 
       </div>
@@ -541,13 +140,13 @@
       <div class="stat-box">
 
         <div class="stat-label">
-          Last Month Saved
+          Daily Spend
         </div>
 
         <div
           class="stat-value"
-          id="lastMonthSaved"
-          style="color: var(--income);"
+          id="dailySpend"
+          style="color: var(--primary);"
         >
           ₹0
         </div>
@@ -565,7 +164,6 @@
       Current budget period: Loading...
     </div>
 
-
   </div>
 
 
@@ -573,13 +171,15 @@
 
   <div class="card">
 
-    <h2>Budget Period</h2>
+    <h2>
+      Budget Period
+    </h2>
 
 
     <div class="form-group">
 
       <label for="periodStart">
-        Budget period starts on day:
+        Budget period starts on day
       </label>
 
 
@@ -589,13 +189,13 @@
         min="1"
         max="31"
         value="3"
-      />
+      >
 
     </div>
 
 
     <button
-      class="btn-sim"
+      class="btn btn-primary"
       style="width: 100%;"
       onclick="saveBudgetPeriod()"
     >
@@ -606,16 +206,24 @@
     <div
       class="setting-status"
       id="periodStatus"
+      style="
+        text-align:center;
+        margin-top:8px;
+        font-size:0.8rem;
+        color:#6b7280;
+      "
     ></div>
 
   </div>
 
 
-  <!-- ADD TRANSACTION -->
+  <!-- LOG TRANSACTION -->
 
   <div class="card">
 
-    <h2>Log Transaction</h2>
+    <h2>
+      Log Transaction
+    </h2>
 
 
     <div class="form-group">
@@ -624,7 +232,7 @@
         type="text"
         id="txNote"
         placeholder="Description (e.g. Groceries, Rent)"
-      />
+      >
 
 
       <input
@@ -632,7 +240,7 @@
         id="txAmount"
         placeholder="Amount (₹)"
         min="0"
-      />
+      >
 
     </div>
 
@@ -640,7 +248,7 @@
     <div class="btn-group">
 
       <button
-        class="btn-add"
+        class="btn btn-add"
         onclick="addTransaction('income')"
       >
         + Add Income
@@ -648,7 +256,7 @@
 
 
       <button
-        class="btn-sub"
+        class="btn btn-sub"
         onclick="addTransaction('expense')"
       >
         - Add Expense
@@ -663,7 +271,9 @@
 
   <div class="card">
 
-    <h2>Can I Afford This?</h2>
+    <h2>
+      Can I Afford This?
+    </h2>
 
 
     <div class="form-group">
@@ -673,14 +283,14 @@
         id="simAmount"
         placeholder="Planned purchase amount (₹)"
         min="0"
-      />
+      >
 
     </div>
 
 
     <button
-      class="btn-sim"
-      style="width: 100%;"
+      class="btn btn-primary"
+      style="width:100%;"
       onclick="checkAffordability()"
     >
       Calculate Impact
@@ -690,17 +300,30 @@
     <div
       id="simResult"
       class="sim-result"
-      style="display: none;"
+      style="display:none;"
     ></div>
 
   </div>
 
 
-  <!-- HISTORY -->
+</div>
+
+
+<!-- ===================================================
+     TRANSACTION HISTORY PAGE
+=================================================== -->
+
+<div
+  class="page"
+  id="historyPage"
+>
+
 
   <div class="card">
 
-    <h2>Transaction History</h2>
+    <h2>
+      Transaction History
+    </h2>
 
 
     <ul
@@ -712,1610 +335,7 @@
 
 
 </div>
-
-
-<script>
-
-
-// =====================================================
-// GOOGLE APPS SCRIPT URL
-// =====================================================
-
-const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzUZi0qSHccQZrEtZ0vThpzm6k5GLEP2laco8SGwcxtKSXw8HJDX1cOQDHQGF0brzg4/exec";
-
-
-let transactions = [];
-
-
-// =====================================================
-// BUDGET PERIOD
-// =====================================================
-
-function getBudgetStartDay() {
-
-  const savedDay =
-    parseInt(
-      localStorage.getItem(
-        "budgetPeriodStart"
-      )
-    );
-
-
-  if (
-    !isNaN(savedDay) &&
-    savedDay >= 1 &&
-    savedDay <= 31
-  ) {
-
-    return savedDay;
-
-  }
-
-
-  return 3;
-}
-
-
-function saveBudgetPeriod() {
-
-  const startDay =
-    parseInt(
-      document.getElementById(
-        "periodStart"
-      ).value
-    );
-
-
-  if (
-    isNaN(startDay) ||
-    startDay < 1 ||
-    startDay > 31
-  ) {
-
-    alert(
-      "Please enter a valid day between 1 and 31."
-    );
-
-    return;
-  }
-
-
-  localStorage.setItem(
-    "budgetPeriodStart",
-    startDay
-  );
-
-
-  document.getElementById(
-    "periodStatus"
-  ).innerText =
-    `Budget period starts on the ${getOrdinal(startDay)} of every month.`;
-
-
-  updateUI();
-}
-
-
-function loadBudgetPeriod() {
-
-  const startDay =
-    getBudgetStartDay();
-
-
-  document.getElementById(
-    "periodStart"
-  ).value =
-    startDay;
-
-
-  document.getElementById(
-    "periodStatus"
-  ).innerText =
-    `Budget period starts on the ${getOrdinal(startDay)} of every month.`;
-}
-
-
-// =====================================================
-// ORDINAL
-// =====================================================
-
-function getOrdinal(number) {
-
-  if (
-    number % 100 >= 11 &&
-    number % 100 <= 13
-  ) {
-
-    return number + "th";
-
-  }
-
-
-  switch (
-    number % 10
-  ) {
-
-    case 1:
-      return number + "st";
-
-    case 2:
-      return number + "nd";
-
-    case 3:
-      return number + "rd";
-
-    default:
-      return number + "th";
-  }
-}
-
-
-// =====================================================
-// SAFE DATE
-// =====================================================
-
-function createSafeDate(
-  year,
-  month,
-  day
-) {
-
-  const date =
-    new Date(
-      year,
-      month,
-      1
-    );
-
-
-  const lastDay =
-    new Date(
-      year,
-      month + 1,
-      0
-    ).getDate();
-
-
-  date.setDate(
-    Math.min(
-      day,
-      lastDay
-    )
-  );
-
-
-  date.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-  return date;
-}
-
-
-// =====================================================
-// CURRENT PERIOD
-// =====================================================
-
-function getCurrentBudgetPeriod() {
-
-  const today =
-    new Date();
-
-
-  today.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-  const startDay =
-    getBudgetStartDay();
-
-
-  let startDate;
-  let endDate;
-
-
-  if (
-    today.getDate() >= startDay
-  ) {
-
-    startDate =
-      createSafeDate(
-        today.getFullYear(),
-        today.getMonth(),
-        startDay
-      );
-
-
-    endDate =
-      createSafeDate(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        startDay
-      );
-
-
-  } else {
-
-    startDate =
-      createSafeDate(
-        today.getFullYear(),
-        today.getMonth() - 1,
-        startDay
-      );
-
-
-    endDate =
-      createSafeDate(
-        today.getFullYear(),
-        today.getMonth(),
-        startDay
-      );
-  }
-
-
-  return {
-    startDate,
-    endDate
-  };
-}
-
-
-// =====================================================
-// PREVIOUS PERIOD
-// =====================================================
-
-function getPreviousBudgetPeriod() {
-
-  const current =
-    getCurrentBudgetPeriod();
-
-
-  const startDay =
-    getBudgetStartDay();
-
-
-  const previousStart =
-    createSafeDate(
-      current.startDate.getFullYear(),
-      current.startDate.getMonth() - 1,
-      startDay
-    );
-
-
-  const previousEnd =
-    new Date(
-      current.startDate
-    );
-
-
-  previousEnd.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-  return {
-    startDate: previousStart,
-    endDate: previousEnd
-  };
-}
-
-
-// =====================================================
-// PARSE DATE
-// =====================================================
-
-function parseTransactionDate(
-  dateValue
-) {
-
-  if (!dateValue) {
-    return null;
-  }
-
-
-  if (
-    dateValue instanceof Date
-  ) {
-
-    const date =
-      new Date(dateValue);
-
-
-    date.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
-
-    return date;
-  }
-
-
-  const text =
-    String(
-      dateValue
-    ).trim();
-
-
-  const match =
-    text.match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
-    );
-
-
-  if (match) {
-
-    const day =
-      parseInt(
-        match[1]
-      );
-
-
-    const month =
-      parseInt(
-        match[2]
-      ) - 1;
-
-
-    const year =
-      parseInt(
-        match[3]
-      );
-
-
-    const date =
-      new Date(
-        year,
-        month,
-        day
-      );
-
-
-    date.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
-
-    return date;
-  }
-
-
-  const parsed =
-    new Date(text);
-
-
-  if (
-    !isNaN(
-      parsed.getTime()
-    )
-  ) {
-
-    parsed.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
-
-    return parsed;
-  }
-
-
-  return null;
-}
-
-
-// =====================================================
-// DATE IN PERIOD
-// =====================================================
-
-function isDateInPeriod(
-  date,
-  startDate,
-  endDate
-) {
-
-  if (!date) {
-    return false;
-  }
-
-
-  return (
-    date >= startDate &&
-    date < endDate
-  );
-}
-
-
-// =====================================================
-// PERIOD TOTAL
-// =====================================================
-
-function calculatePeriodTotal(
-  startDate,
-  endDate
-) {
-
-  return transactions.reduce(
-    (
-      total,
-      item
-    ) => {
-
-      const transactionDate =
-        parseTransactionDate(
-          item.date
-        );
-
-
-      if (
-        !isDateInPeriod(
-          transactionDate,
-          startDate,
-          endDate
-        )
-      ) {
-
-        return total;
-      }
-
-
-      const amount =
-        parseFloat(
-          item.amount
-        ) || 0;
-
-
-      if (
-        item.type === "income"
-      ) {
-
-        return total + amount;
-
-      }
-
-
-      return total - amount;
-
-    },
-    0
-  );
-}
-
-
-// =====================================================
-// TOTAL BALANCE
-// =====================================================
-
-function calculateTotalBalance() {
-
-  return transactions.reduce(
-    (
-      balance,
-      item
-    ) => {
-
-      const amount =
-        parseFloat(
-          item.amount
-        ) || 0;
-
-
-      if (
-        item.type === "income"
-      ) {
-
-        return balance + amount;
-
-      }
-
-
-      return balance - amount;
-
-    },
-    0
-  );
-}
-
-
-// =====================================================
-// LAST MONTH SAVED
-// =====================================================
-
-function calculateLastMonthSaved() {
-
-  const previous =
-    getPreviousBudgetPeriod();
-
-
-  return calculatePeriodTotal(
-    previous.startDate,
-    previous.endDate
-  );
-}
-
-
-// =====================================================
-// DAYS REMAINING
-// =====================================================
-
-function getDaysRemaining() {
-
-  const today =
-    new Date();
-
-
-  today.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-  const {
-    endDate
-  } =
-    getCurrentBudgetPeriod();
-
-
-  const difference =
-    endDate - today;
-
-
-  return Math.max(
-    1,
-    Math.ceil(
-      difference /
-      (
-        1000 *
-        60 *
-        60 *
-        24
-      )
-    ) + 1
-  );
-}
-
-
-// =====================================================
-// FORMAT DATE
-// =====================================================
-
-function formatDate(date) {
-
-  return date.toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    }
-  );
-}
-
-
-// =====================================================
-// UPDATE PERIOD DISPLAY
-// =====================================================
-
-function updatePeriodDisplay() {
-
-  const {
-    startDate,
-    endDate
-  } =
-    getCurrentBudgetPeriod();
-
-
-  document.getElementById(
-    "periodInfo"
-  ).innerText =
-    `Current budget period: ${formatDate(startDate)} → ${formatDate(endDate)}`;
-}
-
-
-// =====================================================
-// FETCH DATA
-// =====================================================
-
-async function fetchCloudData() {
-
-  const statusEl =
-    document.getElementById(
-      "syncStatus"
-    );
-
-
-  statusEl.innerText =
-    "Syncing with Google Sheets...";
-
-
-  try {
-
-    const res =
-      await fetch(
-        SCRIPT_URL
-      );
-
-
-    transactions =
-      await res.json();
-
-
-    transactions =
-      transactions.map(
-        item => ({
-          ...item,
-          amount:
-            parseFloat(
-              item.amount
-            ) || 0
-        })
-      );
-
-
-    statusEl.innerText =
-      "Connected to Google Sheets";
-
-
-    updateUI();
-
-
-  } catch (err) {
-
-    statusEl.innerText =
-      "Failed to load Google Sheets data.";
-
-
-    console.error(err);
-  }
-}
-
-
-// =====================================================
-// ADD TRANSACTION
-// =====================================================
-
-async function addTransaction(
-  type
-) {
-
-  const noteInput =
-    document.getElementById(
-      "txNote"
-    );
-
-
-  const amountInput =
-    document.getElementById(
-      "txAmount"
-    );
-
-
-  const note =
-    noteInput.value.trim() ||
-    (
-      type === "income"
-        ? "Income"
-        : "Expense"
-    );
-
-
-  const amount =
-    parseFloat(
-      amountInput.value
-    );
-
-
-  if (
-    isNaN(amount) ||
-    amount <= 0
-  ) {
-
-    alert(
-      "Please enter a valid amount"
-    );
-
-    return;
-  }
-
-
-  const payload = {
-
-    id:
-      Date.now(),
-
-    note:
-      note,
-
-    amount:
-      amount,
-
-    type:
-      type,
-
-    date:
-      new Date()
-        .toLocaleDateString()
-
-  };
-
-
-  const statusEl =
-    document.getElementById(
-      "syncStatus"
-    );
-
-
-  statusEl.innerText =
-    "Saving transaction...";
-
-
-  try {
-
-    await fetch(
-      SCRIPT_URL,
-      {
-
-        method:
-          "POST",
-
-        mode:
-          "no-cors",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            payload
-          )
-
-      }
-    );
-
-
-    transactions.unshift(
-      payload
-    );
-
-
-    updateUI();
-
-
-    statusEl.innerText =
-      "Transaction saved!";
-
-
-    noteInput.value =
-      "";
-
-    amountInput.value =
-      "";
-
-
-  } catch (err) {
-
-    alert(
-      "Failed to save transaction."
-    );
-
-
-    statusEl.innerText =
-      "Error saving data.";
-  }
-}
-
-
-// =====================================================
-// EDIT TRANSACTION
-// =====================================================
-
-function editTransaction(id) {
-
-  const transaction =
-    transactions.find(
-      item =>
-        String(item.id) ===
-        String(id)
-    );
-
-
-  if (!transaction) {
-
-    alert(
-      "Transaction not found."
-    );
-
-    return;
-  }
-
-
-  const historyList =
-    document.getElementById(
-      "historyList"
-    );
-
-
-  const existingEdit =
-    document.getElementById(
-      "edit-" + id
-    );
-
-
-  if (existingEdit) {
-
-    existingEdit.remove();
-
-    return;
-  }
-
-
-  const li =
-    document.createElement(
-      "li"
-    );
-
-
-  li.className =
-    "edit-box";
-
-
-  li.id =
-    "edit-" + id;
-
-
-  const parsedDate =
-    parseTransactionDate(
-      transaction.date
-    );
-
-
-  let dateValue = "";
-
-
-  if (parsedDate) {
-
-    const year =
-      parsedDate.getFullYear();
-
-
-    const month =
-      String(
-        parsedDate.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    const day =
-      String(
-        parsedDate.getDate()
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    dateValue =
-      `${year}-${month}-${day}`;
-  }
-
-
-  li.innerHTML = `
-
-    <div class="form-group">
-
-      <label>
-        Description
-      </label>
-
-      <input
-        type="text"
-        id="editNote-${id}"
-        value="${escapeHtml(transaction.note)}"
-      />
-
-
-      <label>
-        Amount
-      </label>
-
-      <input
-        type="number"
-        id="editAmount-${id}"
-        value="${transaction.amount}"
-        min="0"
-      />
-
-
-      <label>
-        Type
-      </label>
-
-      <select
-        id="editType-${id}"
-      >
-
-        <option
-          value="income"
-          ${transaction.type === "income" ? "selected" : ""}
-        >
-          Income
-        </option>
-
-        <option
-          value="expense"
-          ${transaction.type === "expense" ? "selected" : ""}
-        >
-          Expense
-        </option>
-
-      </select>
-
-
-      <label>
-        Date
-      </label>
-
-      <input
-        type="date"
-        id="editDate-${id}"
-        value="${dateValue}"
-      />
-
-    </div>
-
-
-    <div class="edit-buttons">
-
-      <button
-        class="btn-save"
-        onclick="saveEditedTransaction('${id}')"
-      >
-        Save Changes
-      </button>
-
-
-      <button
-        class="btn-cancel"
-        onclick="cancelEdit('${id}')"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-  `;
-
-
-  /*
-    Put the edit box immediately
-    after the selected transaction.
-  */
-
-  const transactionItems =
-    historyList.children;
-
-
-  for (
-    let i = 0;
-    i < transactionItems.length;
-    i++
-  ) {
-
-    const item =
-      transactionItems[i];
-
-
-    if (
-      item.dataset.id ===
-      String(id)
-    ) {
-
-      item.after(li);
-
-      return;
-    }
-  }
-
-
-  historyList.prepend(
-    li
-  );
-}
-
-
-// =====================================================
-// SAVE EDITED TRANSACTION
-// =====================================================
-
-async function saveEditedTransaction(
-  id
-) {
-
-  const note =
-    document.getElementById(
-      "editNote-" + id
-    ).value.trim();
-
-
-  const amount =
-    parseFloat(
-      document.getElementById(
-        "editAmount-" + id
-      ).value
-    );
-
-
-  const type =
-    document.getElementById(
-      "editType-" + id
-    ).value;
-
-
-  const dateInput =
-    document.getElementById(
-      "editDate-" + id
-    ).value;
-
-
-  if (!note) {
-
-    alert(
-      "Please enter a description."
-    );
-
-    return;
-  }
-
-
-  if (
-    isNaN(amount) ||
-    amount <= 0
-  ) {
-
-    alert(
-      "Please enter a valid amount."
-    );
-
-    return;
-  }
-
-
-  if (!dateInput) {
-
-    alert(
-      "Please select a date."
-    );
-
-    return;
-  }
-
-
-  /*
-    Convert YYYY-MM-DD into
-    DD/MM/YYYY so it works
-    with the existing date system.
-  */
-
-  const parts =
-    dateInput.split("-");
-
-
-  const formattedDate =
-    `${parts[2]}/${parts[1]}/${parts[0]}`;
-
-
-  const updatedTransaction = {
-
-    action:
-      "update",
-
-    id:
-      id,
-
-    note:
-      note,
-
-    amount:
-      amount,
-
-    type:
-      type,
-
-    date:
-      formattedDate
-
-  };
-
-
-  const statusEl =
-    document.getElementById(
-      "syncStatus"
-    );
-
-
-  statusEl.innerText =
-    "Updating transaction...";
-
-
-  try {
-
-    await fetch(
-      SCRIPT_URL,
-      {
-
-        method:
-          "POST",
-
-        mode:
-          "no-cors",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            updatedTransaction
-          )
-
-      }
-    );
-
-
-    /*
-      Update local transaction
-      immediately.
-    */
-
-    const index =
-      transactions.findIndex(
-        item =>
-          String(item.id) ===
-          String(id)
-      );
-
-
-    if (index !== -1) {
-
-      transactions[index] = {
-
-        ...transactions[index],
-
-        note:
-          note,
-
-        amount:
-          amount,
-
-        type:
-          type,
-
-        date:
-          formattedDate
-
-      };
-    }
-
-
-    updateUI();
-
-
-    statusEl.innerText =
-      "Transaction updated!";
-
-
-  } catch (err) {
-
-    console.error(err);
-
-
-    statusEl.innerText =
-      "Error updating transaction.";
-
-
-    alert(
-      "Failed to update transaction."
-    );
-  }
-}
-
-
-// =====================================================
-// CANCEL EDIT
-// =====================================================
-
-function cancelEdit(id) {
-
-  const editBox =
-    document.getElementById(
-      "edit-" + id
-    );
-
-
-  if (editBox) {
-
-    editBox.remove();
-
-  }
-}
-
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-
-function escapeHtml(
-  text
-) {
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-
-  div.textContent =
-    text || "";
-
-
-  return div.innerHTML;
-}
-
-
-// =====================================================
-// UPDATE UI
-// =====================================================
-
-function updateUI() {
-
-  updatePeriodDisplay();
-
-
-  const balance =
-    calculateTotalBalance();
-
-
-  const daysLeft =
-    getDaysRemaining();
-
-
-  const dailySpend =
-    daysLeft > 0
-      ? balance / daysLeft
-      : balance;
-
-
-  const lastMonthSaved =
-    calculateLastMonthSaved();
-
-
-  document.getElementById(
-    "totalBalance"
-  ).innerText =
-    `₹${Math.max(
-      0,
-      balance
-    ).toLocaleString(
-      "en-IN",
-      {
-        maximumFractionDigits: 2
-      }
-    )}`;
-
-
-  document.getElementById(
-    "daysLeft"
-  ).innerText =
-    `${daysLeft} days`;
-
-
-  document.getElementById(
-    "dailySpend"
-  ).innerText =
-    `₹${Math.max(
-      0,
-      dailySpend
-    ).toFixed(2)} / day`;
-
-
-  document.getElementById(
-    "lastMonthSaved"
-  ).innerText =
-    `₹${Math.max(
-      0,
-      lastMonthSaved
-    ).toLocaleString(
-      "en-IN",
-      {
-        maximumFractionDigits: 2
-      }
-    )}`;
-
-
-  // =====================================================
-  // TRANSACTION HISTORY
-  // =====================================================
-
-  const listEl =
-    document.getElementById(
-      "historyList"
-    );
-
-
-  listEl.innerHTML =
-    "";
-
-
-  if (
-    transactions.length === 0
-  ) {
-
-    listEl.innerHTML =
-      `
-      <li
-        style="
-          text-align:center;
-          color:#9ca3af;
-          padding:10px;
-        "
-      >
-        No transactions logged yet.
-      </li>
-      `;
-
-    return;
-  }
-
-
-  transactions.forEach(
-    item => {
-
-      const li =
-        document.createElement(
-          "li"
-        );
-
-
-      li.className =
-        "history-item";
-
-
-      li.dataset.id =
-        String(item.id);
-
-
-      const sign =
-        item.type === "income"
-          ? "+"
-          : "-";
-
-
-      const cssClass =
-        item.type === "income"
-          ? "amount-income"
-          : "amount-expense";
-
-
-      const amount =
-        parseFloat(
-          item.amount
-        ) || 0;
-
-
-      li.innerHTML = `
-
-        <div class="history-left">
-
-          <div
-            style="font-weight: 500;"
-          >
-            ${escapeHtml(
-              item.note
-            )}
-          </div>
-
-
-          <div
-            style="
-              font-size: 0.75rem;
-              color: #9ca3af;
-            "
-          >
-            ${escapeHtml(
-              String(item.date)
-            )}
-          </div>
-
-        </div>
-
-
-        <div class="history-right">
-
-          <div
-            class="${cssClass}"
-          >
-            ${sign}₹${amount.toLocaleString(
-              "en-IN"
-            )}
-          </div>
-
-
-          <button
-            class="btn-edit"
-            onclick="editTransaction('${item.id}')"
-          >
-            Edit
-          </button>
-
-        </div>
-
-      `;
-
-
-      listEl.appendChild(
-        li
-      );
-
-    }
-  );
-}
-
-
-// =====================================================
-// AFFORDABILITY SIMULATOR
-// =====================================================
-
-function checkAffordability() {
-
-  const simInput =
-    document.getElementById(
-      "simAmount"
-    );
-
-
-  const cost =
-    parseFloat(
-      simInput.value
-    );
-
-
-  const resultEl =
-    document.getElementById(
-      "simResult"
-    );
-
-
-  if (
-    isNaN(cost) ||
-    cost <= 0
-  ) {
-
-    alert(
-      "Please enter a valid purchase amount"
-    );
-
-    return;
-  }
-
-
-  const currentBalance =
-    calculateTotalBalance();
-
-
-  const daysLeft =
-    getDaysRemaining();
-
-
-  const remainingBalance =
-    currentBalance - cost;
-
-
-  resultEl.style.display =
-    "block";
-
-
-  if (
-    remainingBalance < 0
-  ) {
-
-    resultEl.className =
-      "sim-result warning";
-
-
-    resultEl.innerHTML = `
-
-      <strong>
-        Over Budget!
-      </strong>
-
-      Buying this will put you
-      in a deficit of
-
-      <strong>
-        ₹${Math.abs(
-          remainingBalance
-        ).toLocaleString(
-          "en-IN"
-        )}
-      </strong>.
-
-    `;
-
-
-  } else {
-
-
-    const newDailySpend =
-      daysLeft > 0
-        ? (
-            remainingBalance /
-            daysLeft
-          ).toFixed(2)
-        : remainingBalance.toFixed(2);
-
-
-    resultEl.className =
-      "sim-result";
-
-
-    resultEl.innerHTML = `
-
-      You can afford this!
-
-      After spending
-      ₹${cost.toLocaleString(
-        "en-IN"
-      )},
-
-      your daily budget for the
-      next ${daysLeft} days will be
-
-      <strong>
-        ₹${newDailySpend} / day
-      </strong>.
-
-    `;
-  }
-}
-
-
-// =====================================================
-// START APPLICATION
-// =====================================================
-
-loadBudgetPeriod();
-
-fetchCloudData();
-
-
-</script>
-
+</div>
+<script> // ===================================================== // GOOGLE APPS SCRIPT URL // ===================================================== const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUZi0qSHccQZrEtZ0vThpzm6k5GLEP2laco8SGwcxtKSXw8HJDX1cOQDHQGF0brzg4/exec"; let transactions = []; // ===================================================== // MENU // ===================================================== function toggleMenu() { document .getElementById("sideMenu") .classList .toggle("open"); document .getElementById("menuOverlay") .classList .toggle("show"); } function closeMenu() { document .getElementById("sideMenu") .classList .remove("open"); document .getElementById("menuOverlay") .classList .remove("show"); } // ===================================================== // PAGE NAVIGATION // ===================================================== function showPage(page) { const dashboardPage = document.getElementById( "dashboardPage" ); const historyPage = document.getElementById( "historyPage" ); const dashboardMenu = document.getElementById( "dashboardMenu" ); const historyMenu = document.getElementById( "historyMenu" ); const pageTitle = document.getElementById( "pageTitle" ); dashboardPage .classList .remove("active"); historyPage .classList .remove("active"); dashboardMenu .classList .remove("active"); historyMenu .classList .remove("active"); if (page === "dashboard") { dashboardPage .classList .add("active"); dashboardMenu .classList .add("active"); pageTitle.innerText = "Dashboard"; } if (page === "history") { historyPage .classList .add("active"); historyMenu .classList .add("active"); pageTitle.innerText = "Transaction History"; } closeMenu(); } // ===================================================== // BUDGET PERIOD // ===================================================== function getBudgetStartDay() { const savedDay = parseInt( localStorage.getItem( "budgetPeriodStart" ) ); if ( !isNaN(savedDay) && savedDay >= 1 && savedDay <= 31 ) { return savedDay; } return 3; } function saveBudgetPeriod() { const startDay = parseInt( document.getElementById( "periodStart" ).value ); if ( isNaN(startDay) || startDay < 1 || startDay > 31 ) { alert( "Please enter a valid day between 1 and 31." ); return; } localStorage.setItem( "budgetPeriodStart", startDay ); document.getElementById( "periodStatus" ).innerText = `Budget period starts on the ${getOrdinal(startDay)} of every month.`; updateUI(); } function loadBudgetPeriod() { const startDay = getBudgetStartDay(); document.getElementById( "periodStart" ).value = startDay; document.getElementById( "periodStatus" ).innerText = `Budget period starts on the ${getOrdinal(startDay)} of every month.`; } // ===================================================== // ORDINAL // ===================================================== function getOrdinal(number) { if ( number % 100 >= 11 && number % 100 <= 13 ) { return number + "th"; } switch ( number % 10 ) { case 1: return number + "st"; case 2: return number + "nd"; case 3: return number + "rd"; default: return number + "th"; } } // ===================================================== // SAFE DATE // ===================================================== function createSafeDate( year, month, day ) { const date = new Date( year, month, 1 ); const lastDay = new Date( year, month + 1, 0 ).getDate(); date.setDate( Math.min( day, lastDay ) ); date.setHours( 0, 0, 0, 0 ); return date; } // ===================================================== // CURRENT BUDGET PERIOD // ===================================================== function getCurrentBudgetPeriod() { const today = new Date(); today.setHours( 0, 0, 0, 0 ); const startDay = getBudgetStartDay(); let startDate; let endDate; if ( today.getDate() >= startDay ) { startDate = createSafeDate( today.getFullYear(), today.getMonth(), startDay ); endDate = createSafeDate( today.getFullYear(), today.getMonth() + 1, startDay ); } else { startDate = createSafeDate( today.getFullYear(), today.getMonth() - 1, startDay ); endDate = createSafeDate( today.getFullYear(), today.getMonth(), startDay ); } return { startDate, endDate }; } // ===================================================== // PREVIOUS PERIOD // ===================================================== function getPreviousBudgetPeriod() { const current = getCurrentBudgetPeriod(); const startDay = getBudgetStartDay(); const previousStart = createSafeDate( current.startDate.getFullYear(), current.startDate.getMonth() - 1, startDay ); const previousEnd = new Date( current.startDate ); previousEnd.setHours( 0, 0, 0, 0 ); return { startDate: previousStart, endDate: previousEnd }; } // ===================================================== // PARSE DATE // ===================================================== function parseTransactionDate( dateValue ) { if (!dateValue) { return null; } if ( dateValue instanceof Date ) { const date = new Date( dateValue ); date.setHours( 0, 0, 0, 0 ); return date; } const text = String( dateValue ).trim(); const match = text.match( /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/ ); if (match) { const day = parseInt( match[1] ); const month = parseInt( match[2] ) - 1; const year = parseInt( match[3] ); const date = new Date( year, month, day ); date.setHours( 0, 0, 0, 0 ); return date; } const parsed = new Date( text ); if ( !isNaN( parsed.getTime() ) ) { parsed.setHours( 0, 0, 0, 0 ); return parsed; } return null; } // ===================================================== // DATE IN PERIOD // ===================================================== function isDateInPeriod( date, startDate, endDate ) { if (!date) { return false; } return ( date >= startDate && date < endDate ); } // ===================================================== // PERIOD TOTAL // ===================================================== function calculatePeriodTotal( startDate, endDate ) { return transactions.reduce( ( total, item ) => { const transactionDate = parseTransactionDate( item.date ); if ( !isDateInPeriod( transactionDate, startDate, endDate ) ) { return total; } const amount = parseFloat( item.amount ) || 0; if ( item.type === "income" ) { return total + amount; } return total - amount; }, 0 ); } // ===================================================== // TOTAL BALANCE // ===================================================== function calculateTotalBalance() { return transactions.reduce( ( balance, item ) => { const amount = parseFloat( item.amount ) || 0; if ( item.type === "income" ) { return balance + amount; } return balance - amount; }, 0 ); } // ===================================================== // LAST MONTH SAVED // ===================================================== function calculateLastMonthSaved() { const previous = getPreviousBudgetPeriod(); return calculatePeriodTotal( previous.startDate, previous.endDate ); } // ===================================================== // DAYS LEFT // ===================================================== function getDaysRemaining() { const today = new Date(); today.setHours( 0, 0, 0, 0 ); const { endDate } = getCurrentBudgetPeriod(); const difference = endDate - today; return Math.max( 1, Math.ceil( difference / ( 1000 * 60 * 60 * 24 ) ) + 1 ); } // ===================================================== // FORMAT DATE // ===================================================== function formatDate( date ) { return date.toLocaleDateString( "en-IN", { day: "numeric", month: "short", year: "numeric" } ); } // ===================================================== // PERIOD DISPLAY // ===================================================== function updatePeriodDisplay() { const { startDate, endDate } = getCurrentBudgetPeriod(); document.getElementById( "periodInfo" ).innerText = `Current budget period: ${formatDate(startDate)} → ${formatDate(endDate)}`; } // ===================================================== // FETCH GOOGLE SHEETS DATA // ===================================================== async function fetchCloudData() { const statusEl = document.getElementById( "syncStatus" ); statusEl.innerText = "Syncing with Google Sheets..."; try { const response = await fetch( SCRIPT_URL ); transactions = await response.json(); transactions = transactions.map( item => ({ ...item, amount: parseFloat( item.amount ) || 0 }) ); statusEl.innerText = "Connected to Google Sheets"; updateUI(); } catch (error) { console.error( error ); statusEl.innerText = "Failed to load Google Sheets data."; } } // ===================================================== // ADD TRANSACTION // ===================================================== async function addTransaction( type ) { const noteInput = document.getElementById( "txNote" ); const amountInput = document.getElementById( "txAmount" ); const note = noteInput.value.trim() || ( type === "income" ? "Income" : "Expense" ); const amount = parseFloat( amountInput.value ); if ( isNaN(amount) || amount <= 0 ) { alert( "Please enter a valid amount." ); return; } const payload = { id: Date.now(), note: note, amount: amount, type: type, date: new Date() .toLocaleDateString() }; const statusEl = document.getElementById( "syncStatus" ); statusEl.innerText = "Saving transaction..."; try { await fetch( SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify( payload ) } ); transactions.unshift( payload ); updateUI(); statusEl.innerText = "Transaction saved!"; noteInput.value = ""; amountInput.value = ""; } catch (error) { console.error( error ); alert( "Failed to save transaction." ); statusEl.innerText = "Error saving data."; } } // ===================================================== // EDIT TRANSACTION // ===================================================== function editTransaction( id ) { const transaction = transactions.find( item => String(item.id) === String(id) ); if (!transaction) { alert( "Transaction not found." ); return; } const existing = document.getElementById( "edit-" + id ); if (existing) { existing.remove(); return; } const historyList = document.getElementById( "historyList" ); const editBox = document.createElement( "div" ); editBox.className = "edit-box"; editBox.id = "edit-" + id; const parsedDate = parseTransactionDate( transaction.date ); let dateValue = ""; if (parsedDate) { const year = parsedDate .getFullYear(); const month = String( parsedDate.getMonth() + 1 ).padStart( 2, "0" ); const day = String( parsedDate.getDate() ).padStart( 2, "0" ); dateValue = `${year}-${month}-${day}`; } editBox.innerHTML = ` <div class="form-group"> <label> Description </label> <input type="text" id="editNote-${id}" value="${escapeHtml( transaction.note )}" > <label> Amount </label> <input type="number" id="editAmount-${id}" value="${transaction.amount}" min="0" > <label> Type </label> <select id="editType-${id}" > <option value="income" ${ transaction.type === "income" ? "selected" : "" } > Income </option> <option value="expense" ${ transaction.type === "expense" ? "selected" : "" } > Expense </option> </select> <label> Date </label> <input type="date" id="editDate-${id}" value="${dateValue}" > </div> <div class="edit-buttons"> <button class="btn-primary" onclick="saveEditedTransaction('${id}')" > Save Changes </button> <button class="btn-secondary" onclick="cancelEdit('${id}')" > Cancel </button> </div> `; const transactionItem = document.querySelector( `.history-item[data-id="${id}"]` ); if (transactionItem) { transactionItem.after( editBox ); } else { historyList.prepend( editBox ); } } // ===================================================== // SAVE EDIT // ===================================================== async function saveEditedTransaction( id ) { const note = document.getElementById( "editNote-" + id ).value.trim(); const amount = parseFloat( document.getElementById( "editAmount-" + id ).value ); const type = document.getElementById( "editType-" + id ).value; const dateInput = document.getElementById( "editDate-" + id ).value; if (!note) { alert( "Please enter a description." ); return; } if ( isNaN(amount) || amount <= 0 ) { alert( "Please enter a valid amount." ); return; } if (!dateInput) { alert( "Please select a date." ); return; } const parts = dateInput.split("-"); const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`; const payload = { action: "update", id: id, note: note, amount: amount, type: type, date: formattedDate }; const statusEl = document.getElementById( "syncStatus" ); statusEl.innerText = "Updating transaction..."; try { await fetch( SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify( payload ) } ); const index = transactions.findIndex( item => String(item.id) === String(id) ); if ( index !== -1 ) { transactions[index] = { ...transactions[index], note: note, amount: amount, type: type, date: formattedDate }; } updateUI(); statusEl.innerText = "Transaction updated!"; } catch (error) { console.error( error ); alert( "Failed to update transaction." ); statusEl.innerText = "Error updating transaction."; } } // ===================================================== // CANCEL EDIT // ===================================================== function cancelEdit( id ) { const editBox = document.getElementById( "edit-" + id ); if (editBox) { editBox.remove(); } } // ===================================================== // ESCAPE HTML // ===================================================== function escapeHtml( text ) { const div = document.createElement( "div" ); div.textContent = text || ""; return div.innerHTML; } // ===================================================== // UPDATE DASHBOARD // ===================================================== function updateUI() { updatePeriodDisplay(); const balance = calculateTotalBalance(); const daysLeft = getDaysRemaining(); const dailySpend = daysLeft > 0 ? balance / daysLeft : balance; const lastMonthSaved = calculateLastMonthSaved(); document.getElementById( "totalBalance" ).innerText = `₹${Math.max( 0, balance ).toLocaleString( "en-IN", { maximumFractionDigits: 2 } )}`; document.getElementById( "daysLeft" ).innerText = `${daysLeft}`; document.getElementById( "dailySpend" ).innerText = `₹${Math.max( 0, dailySpend ).toFixed(2)}`; document.getElementById( "lastMonthSaved" ).innerText = `₹${Math.max( 0, lastMonthSaved ).toLocaleString( "en-IN", { maximumFractionDigits: 2 } )}`; renderTransactionHistory(); } // ===================================================== // RENDER TRANSACTION HISTORY // ===================================================== function renderTransactionHistory() { const listEl = document.getElementById( "historyList" ); listEl.innerHTML = ""; if ( transactions.length === 0 ) { listEl.innerHTML = ` <li class="empty-history"> No transactions logged yet. </li> `; return; } transactions.forEach( item => { const li = document.createElement( "li" ); li.className = "history-item"; li.dataset.id = String(item.id); const sign = item.type === "income" ? "+" : "-"; const cssClass = item.type === "income" ? "amount-income" : "amount-expense"; const amount = parseFloat( item.amount ) || 0; li.innerHTML = ` <div class="history-left"> <div class="history-note"> ${escapeHtml( item.note )} </div> <div class="history-date"> ${escapeHtml( String(item.date) )} </div> </div> <div class="history-right"> <div class="${cssClass}" > ${sign}₹${amount.toLocaleString( "en-IN" )} </div> <button class="btn-edit" onclick="editTransaction('${item.id}')" > Edit </button> </div> `; listEl.appendChild( li ); } ); } // ===================================================== // AFFORDABILITY CALCULATOR // ===================================================== function checkAffordability() { const input = document.getElementById( "simAmount" ); const cost = parseFloat( input.value ); const result = document.getElementById( "simResult" ); if ( isNaN(cost) || cost <= 0 ) { alert( "Please enter a valid purchase amount." ); return; } const currentBalance = calculateTotalBalance(); const daysLeft = getDaysRemaining(); const remainingBalance = currentBalance - cost; result.style.display = "block"; if ( remainingBalance < 0 ) { result.className = "sim-result warning"; result.innerHTML = ` <strong> Over Budget! </strong> Buying this will put you in a deficit of <strong> ₹${Math.abs( remainingBalance ).toLocaleString( "en-IN" )} </strong>. `; } else { const newDailySpend = daysLeft > 0 ? ( remainingBalance / daysLeft ).toFixed(2) : remainingBalance.toFixed(2); result.className = "sim-result"; result.innerHTML = ` You can afford this! After spending ₹${cost.toLocaleString( "en-IN" )}, your daily budget for the next ${daysLeft} days will be <strong> ₹${newDailySpend} / day </strong>. `; } } // ===================================================== // START // ===================================================== loadBudgetPeriod(); fetchCloudData(); </script>
 </body>
-
 </html>
